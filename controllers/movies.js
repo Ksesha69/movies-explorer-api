@@ -23,7 +23,7 @@ module.exports.createMovie = (req, res, next) => {
     .then((movie) => res.status(OK_200).send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданы некорректные данные в методы создания фильма, пользователя, обновления профиля'));
+        next(new BadRequest());
       }
       next(err);
     });
@@ -41,19 +41,19 @@ module.exports.deleteMovie = (req, res, next) => {
   Movie.findById({ _id: req.params.movieId })
     .then((user) => {
       if (!user) {
-        throw new NotFound('Фильм или пользователь не найден');
+        throw new NotFound();
       }
       if (user.owner.toString() !== userId) {
-        throw new ForbiddenError('Вы не можете удалить чужой фильм');
+        throw new ForbiddenError();
       }
       Movie.findByIdAndDelete({ _id: req.params.movieId })
         .then(() => {
-          res.send({ message: 'Фиьм удален' });
+          res.send({ message: 'Фильм удален' });
         }).catch(next);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequest('Переданы некорректные данные в методы создания фильма, пользователя, обновления профиля'));
+        return next(new BadRequest());
       }
       return next(err);
     });

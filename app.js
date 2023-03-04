@@ -1,8 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
-const NotFound = require('./errors/notFound');
+const helmet = require('helmet');
 
 const router = require('./routes/index');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -13,14 +14,11 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(helmet());
 
 app.use(requestLogger);
 
 app.use(router);
-
-app.all('/*', () => {
-  throw new NotFound('Запрашиваемый ресурс не найден');
-});
 
 app.use(errorLogger);
 

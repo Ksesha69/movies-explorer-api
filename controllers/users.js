@@ -9,11 +9,11 @@ const { OK_200 } = require('../utils/constans');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUserInfo = (req, res, next) => {
-  User.findById(req.params.userId)
+  User.findById(req.user._id)
     .then((user) => {
-      if (user) res.status(OK_200).send({ user });
+      if (user) res.status(OK_200).send({ data: user });
       else {
-        next(new NotFound('Фильм или пользователь не найден'));
+        next(new NotFound());
       }
     })
     .catch((err) => {
@@ -31,14 +31,19 @@ module.exports.changeUser = (req, res, next) => {
     .then((user) => {
       if (user) res.send(user);
       else {
-        next(new NotFound('Фильм или пользователь не найден'));
+        next(new NotFound());
       }
     })
     .catch((err) => {
-      if ((err.name === 'ValidationError')) {
-        return next(new BadRequest('Переданы некорректные данные в методы создания фильма, пользователя, обновления профиля'));
+      if (err.code === 11000) {
+        next(new ConflictError());
+        return;
       }
-      return next(err);
+      if (err.name === 'ValidationError') {
+        next(new BadRequest());
+        return;
+      }
+      next(err);
     });
 };
 
@@ -72,10 +77,10 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequest('Переданы некорректные данные в методы создания фильма, пользователя, обновления профиля'));
+        return next(new BadRequest());
       }
       if (err.code === 11000) {
-        return next(new ConflictError(`Данный ${email} уже существует`));
+        return next(new ConflictError());
       }
       return next(err);
     });
