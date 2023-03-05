@@ -9,7 +9,7 @@ const { NotFound } = require('../errors/notFound');
 router.use('/', routerAuth);
 router.use('/users', auth, routerUser);
 router.use('/movies', auth, routerMovie);
-router.all('/*', auth, () => {
+router.all('/', auth, () => {
   throw new NotFound();
 });
 

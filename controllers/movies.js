@@ -3,7 +3,7 @@ const Movie = require('../models/movie');
 const NotFound = require('../errors/notFound');
 const BadRequest = require('../errors/badRequest');
 const ForbiddenError = require('../errors/ForbiddenError');
-const { OK_200 } = require('../utils/constans');
+const { Delete } = require('../utils/constans');
 
 module.exports.createMovie = (req, res, next) => {
   Movie.create({
@@ -20,10 +20,11 @@ module.exports.createMovie = (req, res, next) => {
     nameRU: req.body.nameRU,
     nameEN: req.body.nameEN,
   })
-    .then((movie) => res.status(OK_200).send(movie))
+    .then((movie) => res.send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest());
+        return;
       }
       next(err);
     });
@@ -48,7 +49,7 @@ module.exports.deleteMovie = (req, res, next) => {
       }
       Movie.findByIdAndDelete({ _id: req.params.movieId })
         .then(() => {
-          res.send({ message: 'Фильм удален' });
+          res.send(Delete);
         }).catch(next);
     })
     .catch((err) => {
