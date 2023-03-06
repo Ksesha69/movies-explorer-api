@@ -49,7 +49,7 @@ module.exports.deleteMovie = (req, res, next) => {
       }
       Movie.findByIdAndDelete({ _id: req.params.movieId })
         .then(() => {
-          res.send(Delete);
+          res.send({ Delete });
         }).catch(next);
     })
     .catch((err) => {

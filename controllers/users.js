@@ -4,14 +4,13 @@ const User = require('../models/user');
 const NotFound = require('../errors/notFound');
 const BadRequest = require('../errors/badRequest');
 const ConflictError = require('../errors/conflictError');
-const { OK_200 } = require('../utils/constans');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (user) res.status(OK_200).send({ data: user });
+      if (user) res.send({ data: user });
       else {
         next(new NotFound());
       }
@@ -70,7 +69,7 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.status(OK_200).send({
+    .then((user) => res.send({
       name: user.name,
       email: user.email,
       _id: user._id,
